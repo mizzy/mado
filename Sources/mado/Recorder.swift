@@ -25,7 +25,7 @@ final class Recorder: NSObject, SCStreamOutput, SCStreamDelegate {
         config.height = height
         config.pixelFormat = kCVPixelFormatType_32BGRA
         config.minimumFrameInterval = CMTime(value: 1, timescale: 30)
-        config.showsCursor = true
+        config.showsCursor = false
         self.streamConfig = config
 
         // Content filter for the specific window
