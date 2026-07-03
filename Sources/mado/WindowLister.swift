@@ -1,6 +1,22 @@
 import ScreenCaptureKit
 
 enum WindowLister {
+    static func getDisplays() async throws -> [SCDisplay] {
+        let content = try await SCShareableContent.excludingDesktopWindows(
+            true,
+            onScreenWindowsOnly: true
+        )
+        return content.displays
+    }
+
+    static func printDisplayList(_ displays: [SCDisplay]) {
+        for (index, display) in displays.enumerated() {
+            let w = Int(display.frame.width)
+            let h = Int(display.frame.height)
+            fputs("[\(index + 1)] Display \(display.displayID) (\(w)x\(h))\n", stderr)
+        }
+    }
+
     static func getWindows() async throws -> [SCWindow] {
         let content = try await SCShareableContent.excludingDesktopWindows(
             true,
