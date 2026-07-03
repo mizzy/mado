@@ -14,11 +14,25 @@ final class Recorder: NSObject, SCStreamOutput, SCStreamDelegate {
     private let streamFilter: SCContentFilter
     private let streamConfig: SCStreamConfiguration
 
-    init(window: SCWindow) throws {
+    convenience init(window: SCWindow) throws {
         let scaleFactor = 2.0 // Retina
-        let width = Int(window.frame.width * scaleFactor)
-        let height = Int(window.frame.height * scaleFactor)
+        try self.init(
+            filter: SCContentFilter(desktopIndependentWindow: window),
+            width: Int(window.frame.width * scaleFactor),
+            height: Int(window.frame.height * scaleFactor)
+        )
+    }
 
+    convenience init(display: SCDisplay) throws {
+        let scaleFactor = 2.0 // Retina
+        try self.init(
+            filter: SCContentFilter(display: display, excludingWindows: []),
+            width: Int(display.frame.width * scaleFactor),
+            height: Int(display.frame.height * scaleFactor)
+        )
+    }
+
+    private init(filter: SCContentFilter, width: Int, height: Int) throws {
         // Stream configuration
         let config = SCStreamConfiguration()
         config.width = width
@@ -28,8 +42,7 @@ final class Recorder: NSObject, SCStreamOutput, SCStreamDelegate {
         config.showsCursor = false
         self.streamConfig = config
 
-        // Content filter for the specific window
-        self.streamFilter = SCContentFilter(desktopIndependentWindow: window)
+        self.streamFilter = filter
 
         // Set up AVAssetWriter
         let timestamp = ISO8601DateFormatter().string(from: Date())
